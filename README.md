@@ -10,9 +10,9 @@ Fallout series' terminal password guessing game in python with the help of
 `ncurses`.
 
 The terminal window is 53 characters wide and 22 lines tall. The actual password
-selection windows are 12 characters wide and 17 lines tall. This gives us 204
-characters to work with. Two words will always be at least one word length apart
-from the next one.
+selection window is broken into 2 sections that are 12 characters wide and 17
+lines tall. This gives us 204 characters to work with. Two words will always be
+at least one word length apart from the next one.
 
 ## Requirements
 
