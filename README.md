@@ -18,3 +18,17 @@ at least one word length apart from the next one.
 
 * Python 3.6+
 * `ncurses`(or [UniCurses](https://pypi.python.org/pypi/UniCurses) if on Windows)
+
+## Screenshots(WIP)
+
+#### In-progress
+![cool coolcoolcool](https://github.com/jabocg/Pytermount/blob/master/screenshots/pytermount-in-progress.png)
+
+#### Success
+![A winrar is you](https://github.com/jabocg/Pytermount/blob/master/screenshots/pytermount-success.png)
+
+#### Failure
+![All your base are belong to us](https://github.com/jabocg/Pytermount/blob/master/screenshots/pytermount-failed.png)
+
+#### Hard mode
+![hold me, I'm so lonely](https://github.com/jabocg/Pytermount/blob/master/screenshots/pytermount-success-hard.png)
