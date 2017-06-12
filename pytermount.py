@@ -10,9 +10,9 @@ import random
 # used temporarily for args
 import sys
 
-MAX_SIZE = 204
+MAX_SIZE = 408
 REGION_WIDTH = 12
-REGION_HEIGHT = 17
+REGION_HEIGHT = 34
 
 
 def main():
@@ -27,7 +27,7 @@ def main():
     password, guessable = chooseWords(difficulty=difficulty)
 
     initTerm(guessable)
-    printTerm()
+    printTerm(mode=1)
 
     maxguesses = 4
     guesses = 0
@@ -73,12 +73,32 @@ def initTerm(words,
             passwordRegion[i] = random.choice(fillers)
 
 
-def printTerm():
-    """Print password region."""
-    sectionSize = MAX_SIZE // REGION_WIDTH
-    for i in range(sectionSize):
-        line = passwordRegion[i * REGION_WIDTH:i * REGION_WIDTH + REGION_WIDTH]
-        print(''.join(line))
+def printTerm(mode=0):
+    """Print password region.
+
+    Keyword arguments:
+    mode -- how the terminal is displayed
+            0 : single block
+            1 : double block
+    """
+    if mode == 0:
+        sectionSize = MAX_SIZE // REGION_WIDTH
+        for i in range(sectionSize):
+            line = passwordRegion[i * REGION_WIDTH:
+                                  i * REGION_WIDTH + REGION_WIDTH]
+            print(''.join(line))
+    elif mode == 1:
+        lines = MAX_SIZE // REGION_WIDTH
+        blockSize = lines // 2
+        block = [''] * blockSize
+        for i in range(lines):
+            line = passwordRegion[i * REGION_WIDTH:
+                                  i * REGION_WIDTH + REGION_WIDTH]
+            if block[i % blockSize] == '':
+                block[i % blockSize] = []
+            block[i % blockSize].append(''.join(line))
+        for l in block:
+            print('    '.join(l))
 
 
 def validWordPosition(index, wordlength):
@@ -147,19 +167,19 @@ def chooseWords(difficulty=0, numwords=0):
     maxwords = 0
     if difficulty == 0:
         wordlength = random.randrange(4, 6)
-        maxwords = 17
+        maxwords = 40
     elif difficulty == 1:
         wordlength = random.randrange(6, 9)
-        maxwords = 11
+        maxwords = 22
     elif difficulty == 2:
         wordlength = random.randrange(9, 11)
-        maxwords = 8
+        maxwords = 18
     elif difficulty == 3:
         wordlength = random.randrange(11, 13)
-        maxwords = 7
+        maxwords = 15
     elif difficulty == 4:
         wordlength = random.randrange(13, 15)
-        maxwords = 6
+        maxwords = 12
 
     if numwords == 0:
         numwords = random.randint(minwords, maxwords)
