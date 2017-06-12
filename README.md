@@ -14,6 +14,8 @@ selection window is broken into 2 sections that are 12 characters wide and 17
 lines tall. This gives us 204 characters to work with. Two words will always be
 at least one word length apart from the next one.
 
+Currently, [Pytermount v1.0.0](https://github.com/jabocg/Pytermount/releases/tag/1.0.0) will only print to the console. There is no dynamic updating, no `ncurses` magic, and no special character combinations. These are intended for a later release.
+
 ## Requirements
 
 * Python 3.6+
