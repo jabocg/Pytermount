@@ -13,6 +13,36 @@ Pytermount  - the Fallout Terminal password guessing game written in Python
               using ncurses
 """
 
+def main():
+    initWords()
+
+    difficulty = 0
+
+    if len(sys.argv) > 1:
+        difficulty = int(sys.argv[1])
+
+    password, guessable = chooseWords(difficulty=difficulty)
+
+    maxguesses = 4
+    guesses = 0
+
+    print('>Possible answers')
+    for w in guessable:
+        print('>{}'.format(w))
+    guess = input('>')
+    correctness = checkCorrectness(password, guess)
+    print('>Entry denied.\n>{}/{} correct.'.format(correctness, len(password)))
+    while correctness < len(password) and guesses < maxguesses:
+        print('>Possible answers')
+        for w in guessable:
+            print('>{}'.format(w))
+        guess = input('>')
+        correctness = checkCorrectness(password, guess)
+        if correctness == len(password):
+            break
+        print('>Entry denied.\n>{}/{} correct.'.format(correctness, len(password)))
+    print('>Exact match.\n>Access granted.')
+
 def initWords(filepath='falloutdict.txt'):
     """Initialize the global words list using file found at filepath.
 
@@ -32,20 +62,6 @@ def initWords(filepath='falloutdict.txt'):
                 wordlist[len(w)] = []
             wordlist[len(w)].append(w)
 
-
-def main():
-    initWords()
-
-    difficulty = 0
-
-    if len(sys.argv) > 1:
-        difficulty = int(sys.argv[1])
-
-    password, guessable = chooseWords(difficulty=difficulty)
-
-    print(guessable)
-    print(password)
-
 def chooseWords(difficulty=0, numwords=0):
     """Return a password and list of guessable words(including the password).
 
@@ -57,7 +73,7 @@ def chooseWords(difficulty=0, numwords=0):
     |     1      |     6-8     |
     |     2      |     9-10    |
     |     3      |    11-12    |
-    |     4      |    13-15    |
+    |     4      |    13-14    |
     +------------+-------------+
 
     numwords is randomized if not specified, must be more than 1
@@ -86,13 +102,14 @@ def chooseWords(difficulty=0, numwords=0):
         wordlength = random.randrange(11, 13)
         maxwords = 7
     elif difficulty == 4:
-        wordlength = random.randrange(13, 16)
+        wordlength = random.randrange(13, 15)
         maxwords = 6
 
     if numwords == 0:
         numwords = random.randint(minwords, maxwords)
 
-    guessable = random.choices(wordlist[wordlength], k=numwords)
+
+    guessable = random.sample(wordlist[wordlength], numwords)
     password = guessable[random.randrange(len(guessable))]
 
     return password, guessable
