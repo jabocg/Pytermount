@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+"""(Py)thon (Term)inal emulator from Fall(out) written with (n)curses."""
+
 
 # import curses
 import pathlib
@@ -8,12 +10,13 @@ import random
 # used temporarily for args
 import sys
 
-"""
-Pytermount  - the Fallout Terminal password guessing game written in Python
-              using ncurses
-"""
+MAX_SIZE = 204
+REGION_WIDTH = 12
+REGION_HEIGHT = 17
+
 
 def main():
+    """Start playing the game."""
     initWords()
 
     difficulty = 0
@@ -23,25 +26,76 @@ def main():
 
     password, guessable = chooseWords(difficulty=difficulty)
 
+    initTerm(guessable)
+    printTerm()
+
     maxguesses = 4
     guesses = 0
 
-    print('>Possible answers')
-    for w in guessable:
-        print('>{}'.format(w))
     guess = input('>')
     correctness = checkCorrectness(password, guess)
+    guesses += 1
     print('>Entry denied.\n>{}/{} correct.'.format(correctness, len(password)))
+    correct = False
     while correctness < len(password) and guesses < maxguesses:
-        print('>Possible answers')
-        for w in guessable:
-            print('>{}'.format(w))
         guess = input('>')
         correctness = checkCorrectness(password, guess)
+        guesses += 1
         if correctness == len(password):
+            correct = True
             break
-        print('>Entry denied.\n>{}/{} correct.'.format(correctness, len(password)))
-    print('>Exact match.\n>Access granted.')
+        print('>Entry denied.\n>{}/{} correct.'.format(correctness,
+              len(password)))
+    if correct:
+        print('>Entry accepted.\n>Access granted.')
+    else:
+        print('>TOO MANY WRONG ATTEMPTS.\n>ACCESS DENIED.')
+
+
+def initTerm(words,
+             fillers=['`', '-', '=', '[', ']', '\\', ';', '\'', ',', '.', '/',
+                      '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_',
+                      '+', '{', '}', '|', ':', '"', '<', '>', '?']):
+    """Set up terminal for dispalying."""
+    global passwordRegion
+    passwordRegion = [''] * MAX_SIZE
+
+    for w in words:
+        index = random.randrange(MAX_SIZE)
+        isValid = validWordPosition(index, len(w))
+        while not isValid:
+            index = random.randrange(MAX_SIZE)
+            isValid = validWordPosition(index, len(w))
+        passwordRegion[index:index + len(w)] = w
+
+    for i, c in enumerate(passwordRegion):
+        if c == '':
+            passwordRegion[i] = random.choice(fillers)
+
+
+def printTerm():
+    """Print password region."""
+    sectionSize = MAX_SIZE // REGION_WIDTH
+    for i in range(sectionSize):
+        line = passwordRegion[i * REGION_WIDTH:i * REGION_WIDTH + REGION_WIDTH]
+        print(''.join(line))
+
+
+def validWordPosition(index, wordlength):
+    """Return whether a position is valid to start a new word.
+
+    Given the global list, a starting index, and the length of the word, return
+    whether the given index is valid to start a new word in.
+    """
+    slice = passwordRegion[clamp(index - wordlength - 1):
+                           clamp(index + wordlength) + wordlength]
+    return index < MAX_SIZE - wordlength and ''.join(slice) == ''
+
+
+def clamp(value, minv=0, maxv=MAX_SIZE):
+    """Clamp value between min and max."""
+    return max(minv, min(value, maxv))
+
 
 def initWords(filepath='falloutdict.txt'):
     """Initialize the global words list using file found at filepath.
@@ -61,6 +115,7 @@ def initWords(filepath='falloutdict.txt'):
             if len(w) not in wordlist:
                 wordlist[len(w)] = []
             wordlist[len(w)].append(w)
+
 
 def chooseWords(difficulty=0, numwords=0):
     """Return a password and list of guessable words(including the password).
@@ -85,6 +140,7 @@ def chooseWords(difficulty=0, numwords=0):
     Returns:
     password -- randomly selected password
     guessable -- list of guessable words(including the password)
+
     """
     wordlength = 0
     minwords = 5
@@ -96,8 +152,8 @@ def chooseWords(difficulty=0, numwords=0):
         wordlength = random.randrange(6, 9)
         maxwords = 11
     elif difficulty == 2:
-        wordlength = random.randrange(9,11)
-        maxwords = 9
+        wordlength = random.randrange(9, 11)
+        maxwords = 8
     elif difficulty == 3:
         wordlength = random.randrange(11, 13)
         maxwords = 7
@@ -107,7 +163,6 @@ def chooseWords(difficulty=0, numwords=0):
 
     if numwords == 0:
         numwords = random.randint(minwords, maxwords)
-
 
     guessable = random.sample(wordlist[wordlength], numwords)
     password = guessable[random.randrange(len(guessable))]
@@ -123,7 +178,7 @@ def checkCorrectness(password, guess):
     guess -- word to compare to password
     """
     if not len(password) == len(guess):
-        raise ValueError("password and chosen word cannot be different lengths")
+        raise ValueError("password and guess cannot be different lengths")
 
     correcteness = 0
 
@@ -132,6 +187,7 @@ def checkCorrectness(password, guess):
             correcteness += 1
 
     return correcteness
+
 
 if __name__ == "__main__":
     main()
